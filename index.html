@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HQ Interativa</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            text-align: center;
+            color: #f0f0f0;
+        }
+        .hq-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px; /* Tamanho ideal para mobile e desktop */
+            border: 4px solid #ffffff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: #000;
+        }
+        .hq-pagina {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        /* Áreas de toque invisíveis (Mapeamento dos Quadrinhos) */
+        .quadro-clicavel {
+            position: absolute;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0); /* Totalmente invisível */
+            transition: background 0.2s ease;
+        }
+        /* Efeito opcional: pisca levemente ao passar o mouse para indicar que é clicável */
+        .quadro-clicavel:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* EXEMPLO DE COORDENADAS (Modifique de acordo com a sua página) */
+        /* Supondo uma página com 4 quadrinhos em grade (2x2) */
+        #quadro1 { top: 0%; left: 0%; width: 50%; height: 50%; }
+        #quadro2 { top: 0%; left: 50%; width: 50%; height: 50%; }
+        #quadro3 { top: 50%; left: 0%; width: 50%; height: 50%; }
+        #quadro4 { top: 50%; left: 50%; width: 50%; height: 50%; }
+
+        /* Tela preta expansível (Modal do Vídeo) */
+        .video-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .video-overlay.ativo {
+            display: flex;
+            opacity: 1;
+        }
+        .video-wrapper {
+            position: relative;
+            width: 90%;
+            max-width: 500px;
+        }
+        video {
+            width: 100%;
+            height: auto;
+            border: 2px solid #fff;
+            border-radius: 4px;
+            background: #000;
+        }
+        .btn-fechar {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+        .instrucao {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #aaa;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Minha HQ Interativa</h1>
+    
+    <div class="hq-container">
+        <!-- Substitua pelo nome do arquivo da sua página principal -->
+        <img src="sua-pagina-hq.png" class="hq-pagina" alt="Página da HQ">
+
+        <!-- Áreas invisíveis sobrepostas nos quadrinhos -->
+        <div class="quadro-clicavel" id="quadro1" onclick="abrirVideo('video-quadro1.mp4')"></div>
+        <div class="quadro-clicavel" id="quadro2" onclick="abrirVideo('video-quadro2.mp4')"></div>
+        <div class="quadro-clicavel" id="quadro3" onclick="abrirVideo('video-quadro3.mp4')"></div>
+        <div class="quadro-clicavel" id="quadro4" onclick="abrirVideo('video-quadro4.mp4')"></div>
+    </div>
+
+    <p class="instrucao">💡 Toque em um quadrinho para ouvir e ver a cena ampliada.</p>
+
+    <!-- Estrutura do Player Expandido -->
+    <div class="video-overlay" id="playerModal" onclick="fecharVideo()">
+        <div class="video-wrapper" onclick="event.stopPropagation()">
+            <button class="btn-fechar" onclick="fecharVideo()">&times;</button>
+            <video id="meuVideo" controls playsinline></video>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('playerModal');
+        const video = document.getElementById('meuVideo');
+
+        function abrirVideo(caminhoVideo) {
+            video.src = caminhoVideo;
+            modal.classList.add('ativo');
+            modal.style.display = 'flex';
+            
+            // Tenta dar o play automático (pode ser bloqueado pelo navegador se não estiver mudo, mas como o usuário clicou, costuma funcionar)
+            video.play().catch(error => {
+                console.log("O autoplay falhou, aguardando clique do usuário no player:", error);
+            });
+        }
+
+        function fecharVideo() {
+            video.pause();
+            modal.classList.remove('ativo');
+            modal.style.display = 'none';
+            video.src = ""; // Limpa o vídeo para economizar memória
+        }
+        
+        // Fecha o vídeo automaticamente quando ele terminar os 10 segundos
+        video.onended = function() {
+            fecharVideo();
+        };
+    </script>
+</body>
+</html>
